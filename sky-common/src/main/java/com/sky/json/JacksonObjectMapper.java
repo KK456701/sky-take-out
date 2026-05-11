@@ -1,5 +1,6 @@
 package com.sky.json;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -25,9 +26,12 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 public class JacksonObjectMapper extends ObjectMapper {
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
-    //public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
+    public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    // public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
     public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
+
+    // 新增点 1：备用日期格式
+    public static final String DEFAULT_ALTERNATE_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
 
     public JacksonObjectMapper() {
         super();
@@ -47,5 +51,10 @@ public class JacksonObjectMapper extends ObjectMapper {
 
         //注册功能模块 例如，可以添加自定义序列化器和反序列化器
         this.registerModule(simpleModule);
+    }
+
+    // 新增点 2：便捷方法，把任意对象转成格式化后的 JSON 字符串（方便调试）
+    public String toJsonPretty(Object obj) throws JsonProcessingException {
+        return this.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
     }
 }
