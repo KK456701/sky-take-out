@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 public class JwtUtil {
@@ -53,6 +54,35 @@ public class JwtUtil {
                 // 设置需要解析的jwt
                 .parseClaimsJws(token).getBody();
         return claims;
+    }
+
+    // ------------------- 新增方法 1：便捷生成 token（常用场景） -------------------
+    /**
+     * 根据用户ID和用户名生成 token
+     * @param secretKey 秘钥
+     * @param ttlMillis 过期毫秒
+     * @param userId 用户ID（会存入 claims）
+     * @param username 用户名（会存入 claims）
+     */
+    public static String createTokenForUser(String secretKey, long ttlMillis, Long userId, String username) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        claims.put("username", username);
+        return createJWT(secretKey, ttlMillis, claims);
+    }
+
+    // ------------------- 新增方法 2：验证 token 是否有效（未过期且签名正确） -------------------
+    /**
+     * 验证 token 是否有效（不抛出异常即为有效）
+     * @return true 有效；false 无效（过期或签名错误）
+     */
+    public static boolean validateToken(String secretKey, String token) {
+        try {
+            parseJWT(secretKey, token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }
